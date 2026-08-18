@@ -2,8 +2,10 @@ name: stock-watch
 
 on:
   schedule:
-    # 5 min est le minimum autorise par GitHub. Chaque run fait 3 verifications
-    # espacees de 100 s -> granularite reelle ~100 s.
+    # GitHub throttle fortement les crons courts : sur */5 il n'execute en pratique
+    # qu'un declenchement sur 8 (~40 min d'ecart mesure). Chaque run verifie donc en
+    # continu pendant ~38 min pour couvrir l'ecart jusqu'au run suivant.
+    # Le groupe de concurrence garde au plus un run en attente : pas d'empilement.
     - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
@@ -19,7 +21,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
@@ -39,7 +41,7 @@ jobs:
           if [ "${{ inputs.notify_now }}" = "true" ]; then
             python3 watch.py --notify-now --loop 1
           else
-            python3 watch.py --loop 3 --interval 100
+            python3 watch.py --loop 24 --interval 100
           fi
 
       - name: Sauvegarder l'etat

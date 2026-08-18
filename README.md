@@ -4,8 +4,11 @@ Surveille la dispo de tailles precises sur un produit thereformation.com et envo
 un push sur le telephone (via ntfy.sh) des qu'une taille surveillee revient en stock.
 
 Surveillance actuelle : **Balia Linen Dress**, couleur Slate Check (STC), **tailles 2 et 4**.
-Verification **toutes les ~100 secondes, 24/7**, via GitHub Actions
-(cron toutes les 5 min, 3 verifications espacees par run).
+Verification **toutes les ~100 secondes, 24/7**, via GitHub Actions.
+
+GitHub n'honore qu'environ 13 % d'un cron `*/5` (ecart reel mesure : ~40 min).
+Le contournement : chaque run verifie en continu pendant ~38 min, ce qui couvre
+l'ecart jusqu'au declenchement suivant.
 
 ## Recevoir les notifs
 
