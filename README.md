@@ -34,16 +34,22 @@ GitHub, donc **meme Mac eteint**. Le topic ntfy n'est PAS dans le depot : il vie
 secret `NTFY_TOPIC`. L'etat (quelles tailles ont deja alerte) survit entre les runs via
 le cache Actions, sans polluer l'historique de commits.
 
-    gh workflow run stock-watch          # declencher une verification tout de suite
+    gh workflow run stock-watch                      # verification immediate
+    gh workflow run stock-watch -f notify_now=true   # test de notif de bout en bout
     gh run list --workflow=stock-watch   # historique
     gh run view --log                    # journal du dernier run
 
 `keepalive.yml` fait un commit par mois : GitHub desactive les crons apres 60 jours
 sans activite sur le depot.
 
-## Execution locale (optionnelle, en secours)
+Depot : https://github.com/alexlitewai/reformation-stock-watch
 
-Le LaunchAgent macOS fait la meme chose toutes les 10 min quand le Mac est allume.
+## Execution locale (desactivee, en secours)
+
+Le LaunchAgent macOS faisait la meme chose toutes les 10 min quand le Mac est allume.
+Il est desactive pour eviter les notifs en double (plist renomme en `.disabled` dans
+`~/Library/LaunchAgents/`). Pour le reactiver, remettre l'extension `.plist` puis
+`launchctl bootstrap`.
 En local le topic doit venir de l'environnement :
 
     NTFY_TOPIC=<topic> python3 watch.py --status
