@@ -1,0 +1,5 @@
+state.json
+state.json.tmp
+watch.log
+launchd.out.log
+launchd.err.log

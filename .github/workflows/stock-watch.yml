@@ -1,0 +1,44 @@
+name: stock-watch
+
+on:
+  schedule:
+    # 5 min est le minimum autorise par GitHub. Chaque run fait 3 verifications
+    # espacees de 100 s -> granularite reelle ~100 s.
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: stock-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      # L'etat (quelles tailles ont deja declenche une alerte) survit d'un run
+      # a l'autre via le cache : pas de commit parasite dans l'historique.
+      - name: Restaurer l'etat
+        uses: actions/cache/restore@v4
+        with:
+          path: state.json
+          key: stock-state-${{ github.run_id }}
+          restore-keys: stock-state-
+
+      - name: Verifier le stock
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python3 watch.py --loop 3 --interval 100
+
+      - name: Sauvegarder l'etat
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state.json
+          key: stock-state-${{ github.run_id }}
+
+      - name: Journal
+        if: always()
+        run: cat watch.log 2>/dev/null || echo "(pas de journal)"

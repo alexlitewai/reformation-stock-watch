@@ -1,0 +1,14 @@
+{
+  "ntfy_server": "https://ntfy.sh",
+  "ntfy_topic": "",
+  "repeat_hours": 12,
+  "watch": {
+    "color": "STC",
+    "name": "Balia Linen Dress (Slate Check)",
+    "sizes": [
+      "2",
+      "4"
+    ],
+    "url": "https://www.thereformation.com/products/balia-linen-dress/1314884.html?dwvar_1314884_color=STC"
+  }
+}
