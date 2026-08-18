@@ -6,6 +6,11 @@ on:
     # espacees de 100 s -> granularite reelle ~100 s.
     - cron: '*/5 * * * *'
   workflow_dispatch:
+    inputs:
+      notify_now:
+        description: "Envoyer une notif avec l'etat courant (test de bout en bout)"
+        type: boolean
+        default: false
 
 concurrency:
   group: stock-watch
@@ -30,7 +35,12 @@ jobs:
       - name: Verifier le stock
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
-        run: python3 watch.py --loop 3 --interval 100
+        run: |
+          if [ "${{ inputs.notify_now }}" = "true" ]; then
+            python3 watch.py --notify-now --loop 1
+          else
+            python3 watch.py --loop 3 --interval 100
+          fi
 
       - name: Sauvegarder l'etat
         if: always()
